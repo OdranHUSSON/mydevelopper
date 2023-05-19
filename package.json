@@ -18,7 +18,11 @@
     "commands": [
       {
         "command": "mydevelopper.addCode",
-        "title": "Add Code"
+        "title": "🤖 Add Code"
+      },
+      {
+        "command": "mydevelopper.commit",
+        "title": "🤖 Generate a commit message and commit"
       }
     ],
     "configuration": {
