@@ -1,6 +1,6 @@
 # mydevelopper README
 
-This is the README for your extension "mydevelopper". The extension enables users to utilize auto GPT-like functions in Visual Studio Code, including automatic creation of test files, automatic TDD (Test-Driven Development), and code generation.
+The extension enables users to utilize auto GPT-like functions in Visual Studio Code, including automatic creation of test files, automatic TDD (Test-Driven Development), and code generation.
 
 ## Features
 
@@ -33,3 +33,9 @@ Keep your users informed about the updates and improvements in each release of y
 ### 0.1.0
 
 - Initial release of the "mydevelopper" extension.
+
+### 0.2.0
+
+- Updated to use the OpenAI Node.js library for API calls.
+- Users can now generate code using the OpenAI GPT model directly in Visual Studio Code.
+- Improved error handling for API calls.

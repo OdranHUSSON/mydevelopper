@@ -1,36 +1,61 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
+const { Configuration, OpenAIApi } = require('openai');
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-
-/**
- * @param {vscode.ExtensionContext} context
- */
 function activate(context) {
+  console.log('Congratulations, your extension "mydevelopper" is now active!');
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "mydevelopper" is now active!');
+  let disposable = vscode.commands.registerCommand('mydevelopper.addCode', async function () {
+    const userInput = await vscode.window.showInputBox({ prompt: 'Enter the code you want to generate' });
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('mydevelopper.helloWorld', function () {
-		// The code you place here will be executed every time your command is executed
+    if (userInput) {
+      const apiKey = vscode.workspace.getConfiguration('mydevelopper').get('openaiApiKey');
+      const configuration = new Configuration({
+        apiKey: apiKey,
+      });
+      const openai = new OpenAIApi(configuration);
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from mydevelopper!');
-	});
+      try {
+        const completion = await openai.createCompletion({
+          model: "text-davinci-003",
+          prompt: userInput,
+          max_tokens: 1000, 
+          n: 1, 
+        });
 
-	context.subscriptions.push(disposable);
+        const options = completion.data.choices.map((choice, index) => ({
+          label: `Option ${index + 1}`,
+          detail: choice.text,
+        }));
+
+        const selectedOption = await vscode.window.showQuickPick(options, {
+          placeHolder: 'Select the code you want to insert',
+        });
+
+        if (selectedOption) {
+          vscode.window.activeTextEditor.edit((editBuilder) => {
+            editBuilder.insert(vscode.window.activeTextEditor.selection.active, selectedOption.detail);
+          });
+        } else {
+          vscode.window.showInformationMessage('No code was selected.');
+        }
+      } catch (error) {
+        if (error.response) {
+          console.log(error.response.status);
+          console.log(error.response.data);
+        } else {
+          console.log(error.message);
+        }
+        vscode.window.showErrorMessage('An error occurred while generating code.');
+      }
+    }
+  });
+
+  context.subscriptions.push(disposable);
 }
 
-// This method is called when your extension is deactivated
 function deactivate() {}
 
 module.exports = {
-	activate,
-	deactivate
-}
+  activate,
+  deactivate
+};
